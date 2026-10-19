@@ -626,11 +626,10 @@ document.getElementById('cats').innerHTML=CATS.map(([v,label])=>{
 }).join('');
 document.getElementById('cats').addEventListener('click',e=>{
   const c=e.target.closest('.cat'); if(!c) return;
-  location.hash='#portfolio';
-  setTimeout(()=>{
-    const b=document.querySelector(`#filters button[data-cat="${c.dataset.cat}"]`);
-    if(b) b.click();
-  },60);
+  history.pushState(null,'','#portfolio');
+  showPortfolio();
+  const b=document.querySelector(`#filters button[data-cat="${c.dataset.cat}"]`);
+  if(b) b.click();
 });
 document.getElementById('cats').addEventListener('keydown',e=>{
   if(e.key==='Enter'||e.key===' '){const c=e.target.closest('.cat'); if(c){e.preventDefault();c.click();}}
@@ -664,21 +663,44 @@ const viewHome=document.getElementById('view-home'),viewPf=document.getElementBy
 const tabs=[...document.querySelectorAll('.tabs a')];
 let onPortfolio=false;
 function setTab(id){tabs.forEach(t=>t.classList.toggle('on',t.getAttribute('href')==='#'+id));}
+function showPortfolio(){
+  onPortfolio=true;
+  viewHome.hidden=true; viewPf.hidden=false;
+  setTab('portfolio');
+  requestAnimationFrame(()=>window.scrollTo(0,0));
+}
+function showHome(target){
+  onPortfolio=false;
+  viewHome.hidden=false; viewPf.hidden=true;
+  const el=target&&document.getElementById(target);
+  requestAnimationFrame(()=>{
+    if(el){el.scrollIntoView({behavior:'auto'});setTab(target);}
+    else window.scrollTo(0,0);
+  });
+}
 function route(){
   const h=location.hash.replace('#','');
-  if(h==='portfolio'){
-    onPortfolio=true;viewHome.hidden=true;viewPf.hidden=false;
-    window.scrollTo({top:0,behavior:'auto'});setTab('portfolio');
-  }else{
-    onPortfolio=false;viewHome.hidden=false;viewPf.hidden=true;
-    if(h&&document.getElementById(h)){
-      const el=document.getElementById(h);
-      requestAnimationFrame(()=>el.scrollIntoView({behavior:'auto'}));
-      setTab(h);
-    }else if(!h||h==='top'){window.scrollTo({top:0,behavior:'auto'});}
-  }
+  if(h==='portfolio') showPortfolio();
+  else showHome(h&&h!=='top'?h:null);
 }
-addEventListener('hashchange',route); route();
+addEventListener('hashchange',route);
+route();
+
+/* 해시에만 의존하지 않도록 클릭을 직접 처리합니다 */
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[href^="#"]');
+  if(!a) return;
+  const t=a.getAttribute('href').slice(1);
+  if(!t) return;
+  e.preventDefault();
+  if(t==='portfolio'){
+    if(location.hash!=='#portfolio') history.pushState(null,'','#portfolio');
+    showPortfolio();
+  }else{
+    if(location.hash!=='#'+t) history.pushState(null,'','#'+t);
+    showHome(t==='top'?null:t);
+  }
+});
 
 /* 문의 폼 품목 목록 */
 const sel=document.getElementById('item');
@@ -719,7 +741,8 @@ document.addEventListener('click',e=>{
 modal.addEventListener('click',e=>{
   if(e.target===modal||e.target.closest('[data-dismiss]'))return closeSheet();
   const ask=e.target.closest('[data-ask]');
-  if(ask){sel.value=ask.dataset.ask;closeSheet();location.hash='#contact';
+  if(ask){sel.value=ask.dataset.ask;closeSheet();
+    history.pushState(null,'','#contact');showHome('contact');
     setTimeout(()=>document.getElementById('name').focus(),400);}
 });
 document.getElementById('close').addEventListener('click',closeSheet);
