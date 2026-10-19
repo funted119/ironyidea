@@ -144,17 +144,6 @@ a{color:inherit;text-decoration:none}
 .more span{font-size:13.5px;color:var(--body)}
 .more i{font-style:normal;font-size:14px;font-weight:700;color:var(--green)}
 
-/* 제품 사진 밴드 */
-.band{padding:clamp(56px,7vw,88px) 0 0}
-.band .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
-.band figure{margin:0;border-radius:var(--r);overflow:hidden;background:var(--soft);
-  border:1px solid var(--line);aspect-ratio:4/3}
-.band figure img{width:100%;height:100%;object-fit:cover}
-.band .note{border-radius:var(--r);background:var(--ink);color:#fff;padding:26px;
-  display:flex;flex-direction:column;justify-content:center;aspect-ratio:4/3}
-.band .note b{font-size:20px;font-weight:800;letter-spacing:-.02em}
-.band .note span{font-size:13.5px;color:#A8B0AC;margin-top:8px;line-height:1.7}
-@media (max-width:680px){ .band .row{grid-template-columns:1fr} }
 /* 제작 과정 */
 .procimg{margin:40px 0 0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff}
 .procimg img{width:100%;height:auto}
@@ -356,12 +345,6 @@ a{color:inherit;text-decoration:none}
       <div><b>영업일 2일</b><span>시안·견적 회신</span></div>
       <div><b>전수 검수</b><span>불량은 수량 제외</span></div>
       <div><b>개별 포장</b><span>낱개 포장 후 발송</span></div>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap">
-      <div class="row" id="band"></div>
     </div>
   </section>
 
@@ -878,12 +861,6 @@ const PROC_ILLUST='';
       <div class="txt"><h3>${p.title}</h3><p>${p.desc}</p><span>${p.when}</span></div>
     </div>`).join('')}</div>`;
 })();
-
-/* 제작 과정 위 사진 밴드 */
-document.getElementById('band').innerHTML=`
-  <figure><img src="${IMG.tee43}" alt="반팔 면티 제작 사례" loading="lazy"></figure>
-  <figure><img src="${IMG.bag43}" alt="패딩 토트백 제작 사례" loading="lazy"></figure>
-  <div class="note"><b>26종 상시 제작</b><span>의류 · 사무 · 디지털 · 생활용품까지<br>한 곳에서 만듭니다</span></div>`;
 
 /* 탭 활성 표시 */
 ['work','process','about','contact'].forEach(id=>{
