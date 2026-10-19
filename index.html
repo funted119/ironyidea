@@ -57,6 +57,7 @@ img,svg{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:4px}
 [hidden]{display:none !important}
+.page:not([data-active]){display:none}
 
 .wrap{width:min(1180px,100% - 48px);margin-inline:auto}
 .sec{padding:clamp(64px,8vw,112px) 0}
@@ -168,6 +169,40 @@ a{color:inherit;text-decoration:none}
 .procard span{margin-top:auto;padding-top:14px;font-size:12.5px;color:#93A099;border-top:1px solid var(--line)}
 @media (max-width:1080px){ .procgrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:560px){ .procgrid{grid-template-columns:1fr} }
+/* 브랜딩 — 원스톱 서비스 */
+.svcs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-top:44px}
+.svc{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  transition:transform .18s,box-shadow .18s,border-color .18s}
+.svc .pad{padding:26px 22px}
+.svc .thumb{aspect-ratio:4/3;background:var(--soft);overflow:hidden;border-bottom:1px solid var(--line)}
+.svc .thumb img{width:100%;height:100%;object-fit:cover}
+/* 브랜딩 사례 갤러리 */
+.cases{margin-top:clamp(48px,6vw,76px)}
+.cases h3{margin:0 0 6px;font-size:clamp(20px,2.4vw,26px);font-weight:800;letter-spacing:-.03em}
+.cases .sub{margin:0 0 26px;font-size:14.5px;color:var(--body)}
+.casegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.casegrid figure{margin:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff}
+.casegrid .pic{aspect-ratio:4/3;background:var(--soft);overflow:hidden}
+.casegrid .pic img{width:100%;height:100%;object-fit:cover}
+.casegrid figcaption{padding:16px 18px}
+.casegrid figcaption b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.02em}
+.casegrid figcaption span{display:block;margin-top:5px;font-size:13px;color:var(--body)}
+@media (max-width:900px){ .casegrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .casegrid{grid-template-columns:1fr} }
+.svc:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,23,26,.07);border-color:#D9DEDB}
+.svc .ic{width:44px;height:44px;border-radius:12px;background:var(--green-soft);color:var(--green);
+  display:grid;place-items:center;margin-bottom:18px}
+.svc .ic svg{width:22px;height:22px}
+.svc b{display:block;font-size:17px;font-weight:700;letter-spacing:-.02em}
+.svc p{margin:8px 0 0;font-size:13.5px;color:var(--body);line-height:1.65}
+.onestop{margin-top:28px;border-radius:24px;background:var(--ink);color:#fff;
+  padding:clamp(30px,4vw,44px);display:flex;justify-content:space-between;align-items:center;gap:26px;flex-wrap:wrap}
+.onestop h3{margin:8px 0 10px;font-size:clamp(21px,2.5vw,28px);font-weight:800;letter-spacing:-.03em}
+.onestop p{margin:0;font-size:14.5px;color:#A8B0AC;line-height:1.75;max-width:52ch}
+.onestop .tagline{font-size:13px;font-weight:700;color:var(--neon);letter-spacing:.06em}
+@media (max-width:1080px){ .svcs{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:680px){ .svcs{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:430px){ .svcs{grid-template-columns:1fr} }
 /* 문의 */
 .form{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:40px}
 .f{display:flex;flex-direction:column;gap:9px}
@@ -295,8 +330,8 @@ a{color:inherit;text-decoration:none}
     <a class="brand" href="#top"><b>IRONYIDEA</b><em>당신의 아이디어를 상품으로</em></a>
     <nav class="tabs" aria-label="주요 메뉴">
       <a href="#work">제작 사례</a>
-      <a href="#portfolio">전체 품목</a>
       <a href="#process">제작 과정</a>
+      <a href="branding.html">브랜딩</a>
       <a href="#about">회사 소개</a>
     </nav>
     <a class="btn btn--green btn--sm" href="#contact">견적 문의</a>
@@ -358,7 +393,7 @@ a{color:inherit;text-decoration:none}
     </div>
   </section>
 
-  <section class="sec sec--soft" id="about">
+  <section class="sec" id="about">
     <div class="wrap">
       <span class="eyebrow">About</span>
       <h2 class="h2">아이러니아이디어</h2>
@@ -405,7 +440,7 @@ a{color:inherit;text-decoration:none}
 </main>
 </div>
 
-<div id="view-portfolio" hidden>
+<div id="portfolio" class="page" hidden>
   <section class="sec pagehead">
     <div class="wrap">
       <a class="back" href="#work">← 제작 사례로 돌아가기</a>
@@ -659,19 +694,25 @@ filters.addEventListener('click',e=>{
 renderCatalog('all');
 
 /* 페이지 전환 */
-const viewHome=document.getElementById('view-home'),viewPf=document.getElementById('view-portfolio');
+const viewHome=document.getElementById('view-home'),viewPf=document.getElementById('portfolio');
 const tabs=[...document.querySelectorAll('.tabs a')];
 let onPortfolio=false;
 function setTab(id){tabs.forEach(t=>t.classList.toggle('on',t.getAttribute('href')==='#'+id));}
-function showPortfolio(){
+function flag(el,on){ if(on) el.setAttribute('data-active',''); else el.removeAttribute('data-active'); }
+function showPage(which){
   onPortfolio=true;
-  viewHome.hidden=true; viewPf.hidden=false;
-  setTab('portfolio');
+  viewHome.hidden=true;
+  viewPf.hidden=false; flag(viewPf,true);
+  setTab(which);
   requestAnimationFrame(()=>window.scrollTo(0,0));
 }
+const showPortfolio=()=>showPage('portfolio');
+const PAGES=['portfolio'];
 function showHome(target){
   onPortfolio=false;
-  viewHome.hidden=false; viewPf.hidden=true;
+  viewHome.hidden=false;
+  viewPf.hidden=true; flag(viewPf,false);
+  if(PAGES.includes(target)) target=null;
   const el=target&&document.getElementById(target);
   requestAnimationFrame(()=>{
     if(el){el.scrollIntoView({behavior:'auto'});setTab(target);}
@@ -680,7 +721,7 @@ function showHome(target){
 }
 function route(){
   const h=location.hash.replace('#','');
-  if(h==='portfolio') showPortfolio();
+  if(PAGES.includes(h)) showPage(h);
   else showHome(h&&h!=='top'?h:null);
 }
 addEventListener('hashchange',route);
@@ -693,9 +734,9 @@ document.addEventListener('click',e=>{
   const t=a.getAttribute('href').slice(1);
   if(!t) return;
   e.preventDefault();
-  if(t==='portfolio'){
-    if(location.hash!=='#portfolio') history.pushState(null,'','#portfolio');
-    showPortfolio();
+  if(PAGES.includes(t)){
+    if(location.hash!=='#'+t) history.pushState(null,'','#'+t);
+    showPage(t);
   }else{
     if(location.hash!=='#'+t) history.pushState(null,'','#'+t);
     showHome(t==='top'?null:t);
