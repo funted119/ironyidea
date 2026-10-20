@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>제작 사례 — 아이러니아이디어</title>
+<meta name="description" content="티셔츠, 후드, 텀블러, 키링, 노트까지. 카테고리별로 모은 굿즈 제작 사례입니다.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#FFFFFF">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="아이러니아이디어">
+<meta property="og:title" content="제작 사례 — 아이러니아이디어">
+<meta property="og:description" content="티셔츠, 후드, 텀블러, 키링, 노트까지. 카테고리별로 모은 굿즈 제작 사례입니다.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><b>IRONYIDEA</b><em>당신의 아이디어를 상품으로</em></a>
+    <nav class="tabs" aria-label="주요 메뉴">
+      <a href="works.html" class="on">제작 사례</a>
+      <a href="index.html#process">제작 과정</a>
+      <a href="branding.html">브랜딩</a>
+      <a href="index.html#about">회사 소개</a>
+    </nav>
+    <a class="btn btn--green btn--sm" href="index.html#contact">견적 문의</a>
+  </div>
+</header>
+
+<main>
+  <section class="sec pagehead">
+    <div class="wrap">
+      <a class="back" href="index.html">← 메인으로 돌아가기</a>
+      <span class="eyebrow" style="margin-top:22px">Works</span>
+      <h2 class="h2">제작 사례 <span id="pfcount" style="color:var(--body);font-size:.5em;font-weight:600"></span></h2>
+      <p class="lead">카테고리별로 모은 전체 품목입니다. 여기 없는 것도 대부분 만들 수 있으니 물어봐 주세요.</p>
+      <div class="filters" id="filters" role="group" aria-label="품목 분류"></div>
+      <div id="catalog"></div>
+      <div class="cta">
+        <div>
+          <span>찾는 품목이 없나요?</span>
+          <h3>원하는 사양을 알려 주시면 만들 수 있는지 확인해 드립니다</h3>
+        </div>
+        <a class="btn btn--green" href="index.html#contact">견적 문의하기</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <div class="fb">IRONYIDEA</div>
+        <p>아이러니컴바인드가 운영하는<br>굿즈 기획·제작 서비스입니다.</p>
+      </div>
+      <div>
+        <h4>문의</h4>
+        <p><a href="tel:07040652275">070-4065-2275</a><br>
+           <a href="mailto:info@ironycombined.com">info@ironycombined.com</a><br>
+           평일 10:00–18:00</p>
+      </div>
+      <div>
+        <h4>주소</h4>
+        <p>경기도 성남시 분당구<br>황새울로200번길 28, 11층 1104-49호</p>
+      </div>
+      <div>
+        <h4>사업자정보</h4>
+        <p>아이러니컴바인드 · 대표 김현창<br>사업자등록번호 217-24-22613</p>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 IRONY COMBINED. All rights reserved.</span>
+      <span>www.ironyidea.co.kr</span>
+    </div>
+  </div>
+</footer>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet" id="sheet"></div>
+  <button class="x" id="close" aria-label="닫기">×</button>
+</div>
+
+<script src="data.js"></script>
+<script>
+document.getElementById('pfcount').textContent=`${items.length}종`;
+
+const catalog=document.getElementById('catalog');
+function renderCatalog(cat){
+  catalog.innerHTML=CATS.filter(([v])=>cat==='all'||v===cat).map(([v,label])=>{
+    const list=items.filter(i=>i.cat===v);
+    if(!list.length) return '';
+    return `<div class="catgroup">
+      <h3>${label} <span>${list.length}종</span></h3>
+      <div class="grid">${list.map(cardHTML).join('')}</div></div>`;
+  }).join('');
+  catalog.querySelectorAll('.card').forEach(c=>c.classList.add('in'));
+}
+const filters=document.getElementById('filters');
+filters.innerHTML=[['all','전체'],...CATS].map(([v,l])=>
+  `<button type="button" data-cat="${v}" aria-pressed="false">${l}</button>`).join('');
+filters.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  filters.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  renderCatalog(b.dataset.cat);
+});
+
+/* 메인의 카테고리 카드에서 넘어온 경우 해당 갈래만 */
+const want=new URLSearchParams(location.search).get('cat');
+const start=[...filters.querySelectorAll('button')]
+  .find(b=>b.dataset.cat===want) || filters.querySelector('button');
+start.setAttribute('aria-pressed','true');
+renderCatalog(start.dataset.cat);
+
+/* 상세 */
+const modal=document.getElementById('modal'),sheet=document.getElementById('sheet');
+let lastFocus=null;
+function openSheet(id){
+  const it=items.find(x=>x.id===id); if(!it) return;
+  lastFocus=document.activeElement;
+  sheet.innerHTML=`
+   <div class="sheet-body">
+     <span class="tag">${CATNAME[it.cat]} · ${it.tag}</span>
+     <h3 id="sheetTitle">${it.name}</h3>
+     <p>${it.desc}</p>
+     <div class="gal"><div class="gal-stage">${galShot(it,SHOTS[0])}</div></div>
+     <dl>${Object.entries(it.spec).filter(([k])=>!['최소 수량','참고가'].includes(k))
+        .map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+     <div class="sheet-actions">
+       <button class="btn btn--green" type="button" data-ask="${it.name}">이 품목으로 문의</button>
+       <button class="btn btn--ghost" type="button" data-dismiss>닫기</button>
+     </div>
+   </div>`;
+  modal.hidden=false;document.body.style.overflow='hidden';
+  document.getElementById('close').focus();
+}
+function closeSheet(){modal.hidden=true;document.body.style.overflow='';if(lastFocus)lastFocus.focus();}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('.card'); if(c&&c.dataset.id) openSheet(c.dataset.id);
+});
+modal.addEventListener('click',e=>{
+  if(e.target===modal||e.target.closest('[data-dismiss]'))return closeSheet();
+  const ask=e.target.closest('[data-ask]');
+  if(ask){closeSheet();location.href='index.html?item='+encodeURIComponent(ask.dataset.ask)+'#contact';}
+});
+document.getElementById('close').addEventListener('click',closeSheet);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeSheet();});
+</script>
+</body>
+</html>
