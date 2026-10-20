@@ -233,6 +233,21 @@ a{color:inherit;text-decoration:none}
 .cbox p{margin:0;font-size:15px;line-height:1.7}
 .cbox p span{color:var(--body);font-size:13.5px}
 
+/* 관심 서비스 체크박스 */
+.checks{display:flex;flex-wrap:wrap;gap:10px}
+.chk{position:relative;display:inline-flex}
+.chk input{position:absolute;opacity:0;width:0;height:0}
+.chk span{display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  padding:11px 18px;border:1px solid var(--line);border-radius:999px;background:#fff;
+  font-size:14.5px;font-weight:600;color:var(--body);transition:all .16s;user-select:none}
+.chk span::before{content:'';width:16px;height:16px;border-radius:5px;border:1.5px solid #CBD3CE;
+  background:#fff;flex:none;transition:all .16s}
+.chk span:hover{border-color:#CFD6D2;color:var(--ink)}
+.chk input:checked + span{border-color:var(--green);background:var(--green-soft);color:var(--ink)}
+.chk input:checked + span::before{background:var(--green);border-color:var(--green);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6'/></svg>");
+  background-size:12px;background-position:center;background-repeat:no-repeat}
+.chk input:focus-visible + span{outline:2px solid var(--green);outline-offset:2px}
 /* 소개 */
 .about{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,64px);align-items:center;margin-top:44px}
 .about p{margin:0 0 18px;font-size:15.5px;color:var(--body);line-height:1.85}
@@ -329,7 +344,7 @@ a{color:inherit;text-decoration:none}
   <div class="wrap">
     <a class="brand" href="#top"><b>IRONYIDEA</b><em>당신의 아이디어를 상품으로</em></a>
     <nav class="tabs" aria-label="주요 메뉴">
-      <a href="#work">제작 사례</a>
+      <a href="#portfolio">제작 사례</a>
       <a href="#process">제작 과정</a>
       <a href="branding.html">브랜딩</a>
       <a href="#about">회사 소개</a>
@@ -426,6 +441,17 @@ a{color:inherit;text-decoration:none}
           <div class="f"><label for="qty">예상 수량</label><select id="qty" name="qty" required>
             <option value="">선택해 주세요</option><option>30–100개</option><option>100–300개</option>
             <option>300–1,000개</option><option>1,000개 이상</option><option>아직 미정</option></select></div>
+          <div class="f full">
+            <label>관심 서비스 <span style="font-weight:400;color:var(--body)">(복수 선택 가능)</span></label>
+            <div class="checks" id="svcchecks">
+              <label class="chk"><input type="checkbox" name="svc" value="굿즈"><span>굿즈</span></label>
+              <label class="chk"><input type="checkbox" name="svc" value="영상 제작"><span>영상 제작</span></label>
+              <label class="chk"><input type="checkbox" name="svc" value="배너 제작"><span>배너 제작</span></label>
+              <label class="chk"><input type="checkbox" name="svc" value="컨설팅"><span>컨설팅</span></label>
+              <label class="chk"><input type="checkbox" name="svc" value="브랜딩"><span>브랜딩</span></label>
+              <label class="chk"><input type="checkbox" name="svc" value="기타"><span>기타</span></label>
+            </div>
+          </div>
           <div class="f full"><label for="msg">내용</label><textarea id="msg" name="msg" required placeholder="만들고 싶은 것, 희망 납기, 참고 이미지 링크를 적어 주세요."></textarea></div>
           <div class="submit-row">
             <button class="btn btn--green" type="submit">문의 보내기</button>
@@ -443,10 +469,10 @@ a{color:inherit;text-decoration:none}
 <div id="portfolio" class="page" hidden>
   <section class="sec pagehead">
     <div class="wrap">
-      <a class="back" href="#work">← 제작 사례로 돌아가기</a>
-      <span class="eyebrow" style="margin-top:22px">Portfolio</span>
-      <h2 class="h2">전체 품목 <span id="pfcount" style="color:var(--body);font-size:.5em;font-weight:600"></span></h2>
-      <p class="lead">여기 없는 것도 대부분 만들 수 있으니 물어봐 주세요.</p>
+      <a class="back" href="#top">← 메인으로 돌아가기</a>
+      <span class="eyebrow" style="margin-top:22px">Works</span>
+      <h2 class="h2">제작 사례 <span id="pfcount" style="color:var(--body);font-size:.5em;font-weight:600"></span></h2>
+      <p class="lead">카테고리별로 모은 전체 품목입니다. 여기 없는 것도 대부분 만들 수 있으니 물어봐 주세요.</p>
       <div class="filters" id="filters" role="group" aria-label="품목 분류"></div>
       <div id="catalog"></div>
       <div class="cta">
@@ -727,6 +753,15 @@ function route(){
 addEventListener('hashchange',route);
 route();
 
+/* 이미지·폰트가 늦게 로드되며 위치가 밀리는 것을 보정 */
+(function(){
+  const h=location.hash.replace('#','');
+  if(!h||h==='top'||PAGES.includes(h)) return;
+  const fix=()=>{const el=document.getElementById(h); if(el) el.scrollIntoView({behavior:'auto'});};
+  addEventListener('load',()=>{fix();setTimeout(fix,120);setTimeout(fix,400);});
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fix);
+})();
+
 /* 해시에만 의존하지 않도록 클릭을 직접 처리합니다 */
 document.addEventListener('click',e=>{
   const a=e.target.closest('a[href^="#"]');
@@ -752,6 +787,22 @@ CATS.forEach(([v,label])=>{
     `<optgroup label="${label}">${list.map(i=>`<option>${i.name}</option>`).join('')}</optgroup>`);
 });
 sel.insertAdjacentHTML('beforeend','<option>목록에 없는 품목</option>');
+sel.insertAdjacentHTML('afterbegin','<option>원스톱 솔루션 (굿즈 + 배너 + 영상 + 행사 + 브랜딩)</option>');
+
+/* 브랜딩 페이지에서 넘어온 경우 자동 선택 */
+(function(){
+  const q=new URLSearchParams(location.search);
+  if(q.get('svc')!=='onestop') return;
+  sel.value='원스톱 솔루션 (굿즈 + 배너 + 영상 + 행사 + 브랜딩)';
+  ['굿즈','영상 제작','배너 제작','브랜딩'].forEach(v=>{
+    const el=document.querySelector(`#svcchecks input[value="${v}"]`);
+    if(el) el.checked=true;
+  });
+  requestAnimationFrame(()=>{
+    const c=document.getElementById('contact');
+    if(c) c.scrollIntoView({behavior:'auto'});
+  });
+})();
 
 /* 상세 */
 const modal=document.getElementById('modal'),sheet=document.getElementById('sheet');
@@ -796,6 +847,9 @@ form.addEventListener('submit',e=>{
   const bad=[...form.querySelectorAll('[required]')].find(el=>!el.value.trim());
   if(bad){bad.focus();bad.style.borderColor='#FF5A00';return;}
   const d=new FormData(form);
+  const svcList=d.getAll('svc');
+  d.delete('svc');
+  if(svcList.length) d.append('관심 서비스', svcList.join(', '));
   const ref='IC-'+new Date().toISOString().slice(2,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
   if(MAIL_ON){
     const url=FORM_ENDPOINT||'https://api.web3forms.com/submit';
@@ -816,6 +870,7 @@ form.addEventListener('submit',e=>{
      <li><b>접수번호</b>${ref}</li>
      <li><b>담당자</b>${d.get('name')}${d.get('org')?' · '+d.get('org'):''}</li>
      <li><b>품목</b>${d.get('item')}</li>
+     ${svcList.length?`<li><b>서비스</b>${svcList.join(', ')}</li>`:''}
      <li><b>수량</b>${d.get('qty')}</li>
    </ul>
    <button class="btn btn--ghost" type="button" id="again">다시 문의하기</button>
